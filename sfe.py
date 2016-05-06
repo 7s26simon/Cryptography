@@ -1,4 +1,3 @@
-# Script created by Simon McCabe
 from random import *
 
 bob = 5

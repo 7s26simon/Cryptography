@@ -1,4 +1,3 @@
-# Script created by Simon McCabe
 # Calculate RSA decryption key
 import random
 
