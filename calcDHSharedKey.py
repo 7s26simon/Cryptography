@@ -1,26 +1,41 @@
-# Diffie-Hellman - Calculate shared key
-def calcSharedKey(G,N,X,Y):
-	# Calculate A and B values
-	A = (G ** X) % N
-	B = (G ** Y) % N
-	key = (B**X) % N 
+# Diffie-Hellman - derive the shared secret key.
+# Both parties end up with the same key without ever sending it directly.
 
-	# Print the maths the script has done
-	print "\n"
-	print "A= (",G,"^",X," mod ",N," = ", A
-	print "B= (",G,"^",Y," mod ",N," = ", B
-	print "Key= (",B,"^",X," mod ",N," = ", key
-	print "\n"
 
-	# Print A, B and Key values without maths behind them
-	print "A =",(G ** X) % N
-	print "B =",(G ** Y) % N
-	print "Key = ", (B**X) % N
-	print "\n"
+def calc_shared_key(g, n, x, y):
+    """
+    g, n : public base and prime modulus, agreed in the open.
+    x, y : Alice's and Bob's private exponents.
+    """
+    # Public values each party sends to the other.
+    a = pow(g, x, n)          # Alice -> Bob
+    b = pow(g, y, n)          # Bob   -> Alice
 
-G = int(raw_input("Enter G (prime 1): "))
-N = int(raw_input("Enter N (prime 2): "))
-X = int(raw_input("Enter X (enc): "))
-Y = int(raw_input("Enter Y (message): "))
+    # Each side raises the value it received by its own private exponent.
+    key_from_alice = pow(b, x, n)   # Alice computes B^x mod n
+    key_from_bob = pow(a, y, n)     # Bob   computes A^y mod n
 
-calcSharedKey(G, N, X, Y)
+    print()
+    print("A = g^x mod n = %d^%d mod %d = %d" % (g, x, n, a))
+    print("B = g^y mod n = %d^%d mod %d = %d" % (g, y, n, b))
+    print("Alice's key = B^x mod n = %d^%d mod %d = %d" % (b, x, n, key_from_alice))
+    print("Bob's   key = A^y mod n = %d^%d mod %d = %d" % (a, y, n, key_from_bob))
+
+    if key_from_alice == key_from_bob:
+        print("Shared key agreed:", key_from_alice)
+    else:  # only happens with invalid (e.g. non-prime) inputs
+        print("Keys do NOT match - check that N is prime.")
+    print()
+    return key_from_alice
+
+
+def main():
+    g = int(input("Enter G (public base): "))
+    n = int(input("Enter N (prime modulus): "))
+    x = int(input("Enter X (Alice's private exponent): "))
+    y = int(input("Enter Y (Bob's private exponent): "))
+    calc_shared_key(g, n, x, y)
+
+
+if __name__ == "__main__":
+    main()
